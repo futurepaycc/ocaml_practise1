@@ -20,4 +20,4 @@ let rec print_tree_infix = function
 
 (* 构建树 *)
 let mytree = Branch(Branch(Leaf 6, 3, Leaf 9), 8, Branch(Leaf 7, 9, Leaf 2))
-let () = print_tree_infix mytree (* 好像必须使用立即函数 *)
+let () = print_tree_infix mytree (* 右侧是unit, 必须使用立即函数 *)

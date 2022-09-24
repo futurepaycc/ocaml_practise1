@@ -1,6 +1,11 @@
 (* 来源: https://www.varesano.net/a-simple-math-expression-calculator-in-ocaml/ 文章中有5种实现 *)
 
-(* 完整的 lexer - parser *)
+(* 
+* 完整的 lexer - parser
+* 递归下降LL(1)解析
+* x::xs使用x代表前看1,xs代表remain状态
+* 带有错误处理
+*)
 
 (*
 这是第一种char list实现
@@ -10,13 +15,13 @@ F5 debug
 *)
 
 (* 表达式文法
-  expr      = plus_expr | plus_expr + expr
-  plus_expr = mul_expr  | mul_expr * plus_expr
-  mul_expr  = number    | ( expr )
+  expr_parser    = term_parser    | term_parser + expr
+  term_parser    = factor_parser  | factor_parser * term_parser
+  factor_parser  = number         | ( expr_parser )
 *)
 
 (* 字符串转char list: .[x]为下标访问，这里是字符串反向迭代，列表前面append的递归 *)
-let explode s =
+let str2list s =
   let rec loop acc = function
     | 0 -> s.[0] :: acc
     | x -> loop (s.[x] :: acc) (x - 1)
@@ -24,9 +29,9 @@ let explode s =
   loop [] ( (String.length s) - 1)
 
 (* char list转回string, String.make 1 char制作单字符串, ^为字符串拼接函数 *)
-let rec implode = function
+let rec list2str = function
   | [] -> ""
-  | x :: xs -> String.make 1 x ^ implode xs
+  | x :: xs -> String.make 1 x ^ list2str xs
 
 (* 数字判断 *)
 let is_digit x = x >= '0' && x <= '9'
@@ -44,44 +49,44 @@ let number l =
   in
   loop 0 l
 
-(* 乘法与括号处理 -- 实际就是括号处理 *)
-let rec mul_expr l =
+(* factor: 数字与 括号 *)
+let rec factor_parser l =
   match l with
   | x :: xs when is_digit x -> number l
   | '(' :: xs ->
-    let x, l = expr xs in
+    let x, l = expr_parser xs in (* 这里与 expr_parser 交互递归 *)
     ( match l with
     | ')' :: xs -> x, xs
     | _ -> raise (SyntaxError l) )
   | _ -> raise (SyntaxError l)
 
-(* 加法处理 -- 实际是乘法处理 *)
-and plus_expr l =
-  let x, l = mul_expr l in
+(* term: 乘法级别处理 *)
+and term_parser l =
+  let x, l = factor_parser l in
   match l with
   | '*' :: xs ->
-    let y, l = plus_expr xs in
+    let y, l = term_parser xs in
     x * y, l
   | _ -> x, l
 
-(* 解析入口 -- 实际是加法处理 *)
-and expr l =
-  let x, l = plus_expr l in
+(* expr: 加法级别处理 *)
+and expr_parser l =
+  let x, l = term_parser l in
   match l with
   | '+' :: xs ->
-    let y, l = expr xs in
+    let y, l = expr_parser xs in
     x + y, l
   | _ -> x, l
 
 let calc s =
   Printf.printf "%s = " s;
   try
-    let l = explode s in
-    let x, l = expr l in
+    let l = str2list s in
+    let x, l = expr_parser l in
     match l with
     | [] -> Printf.printf "%d\n" x
     | _ -> raise (SyntaxError l)
-  with SyntaxError l -> Printf.printf "Parse error at '%s'\n" (implode l)
+  with SyntaxError l -> Printf.printf "Parse error at '%s'\n" (list2str l)
 
 let _ =
   List.iter calc [ "1"; "1+1"; "2*3"; "(1)"; "1+2*3"; "2*(3+4)*5"; "2+3*4(5)" ]

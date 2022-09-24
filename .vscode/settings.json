@@ -1,0 +1,10 @@
+{
+    "ocaml.sandbox": {
+        "kind": "opam",
+        "switch": "4.11.1"
+    },
+    "code-runner.executorMap": {
+        "ocaml": "utop -require sexplib  str.cma ",
+        "ocaml_back": "ocaml -unsafe-string str.cma "
+    }
+}

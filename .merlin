@@ -1,0 +1,8 @@
+FLG -unsafe-string
+EXT lwt
+S .
+S yacc1
+PKG opal
+PKG sexplib
+PKG batteries
+PKG lwt

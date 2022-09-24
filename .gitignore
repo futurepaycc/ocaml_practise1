@@ -1,0 +1,6 @@
+.*
+!.gitignore
+!.vscode
+!.merlin
+!.ocamlformat
+_build

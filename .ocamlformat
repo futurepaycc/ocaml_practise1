@@ -1,0 +1,10 @@
+profile=conventional
+margin=200
+if-then-else=fit-or-vertical
+parens-ite=true
+parens-tuple=multi-line-only
+type-decl=sparse
+break-cases=toplevel
+cases-exp-indent=2
+leading-nested-match-parens=true
+module-item-spacing=preserve

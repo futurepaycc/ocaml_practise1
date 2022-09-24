@@ -1,7 +1,6 @@
-FLG -unsafe-string
-EXT lwt
-S .
-S yacc1
+S third_libs
+
+PKG base
 PKG opal
 PKG sexplib
 PKG batteries

@@ -1,4 +1,4 @@
-(* 来源: http://www.varesano.net/blog/fabio/simple%20math%20expression%20calculator%20ocaml 文章中有5种实现(已无法打开) *)
+(* 来源: https://www.varesano.net/a-simple-math-expression-calculator-in-ocaml/ 文章中有5种实现 *)
 
 (* 完整的 lexer - parser *)
 

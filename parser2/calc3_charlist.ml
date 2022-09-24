@@ -44,7 +44,7 @@ let number l =
   in
   loop 0 l
 
-(* 乘法与括号处理 *)
+(* 乘法与括号处理 -- 实际就是括号处理 *)
 let rec mul_expr l =
   match l with
   | x :: xs when is_digit x -> number l
@@ -55,7 +55,7 @@ let rec mul_expr l =
     | _ -> raise (SyntaxError l) )
   | _ -> raise (SyntaxError l)
 
-(* 加法处理 *)
+(* 加法处理 -- 实际是乘法处理 *)
 and plus_expr l =
   let x, l = mul_expr l in
   match l with
@@ -64,7 +64,7 @@ and plus_expr l =
     x * y, l
   | _ -> x, l
 
-(* 解析入口 *)
+(* 解析入口 -- 实际是加法处理 *)
 and expr l =
   let x, l = plus_expr l in
   match l with

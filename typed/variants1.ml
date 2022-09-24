@@ -1,7 +1,4 @@
-(*这句放在了pkg文件中，直接运行脚本或者repl中需要*)
-#require "batteries";; 
-open Batteries;; (*依赖库*)
-
+(* 变体variants可以类比c语言的union *)
 type day =
   | Sunday
   | Monday
@@ -11,12 +8,16 @@ type day =
   | Friday
   | Saturday
 
-let is_weeken_day d =
-  match d with
-  | Sunday -> true
+let is_weekend_day = function
+  | Sunday   -> true
   | Saturday -> true
-  | _ -> false
+  | _        -> false
+;;
+
+let print_bool = function
+  | true  -> print_endline "true"
+  | false -> print_endline "false"
 ;;
 
 (*lsp这里就是单纯的找不到print_bool么? -- 是batteries内的函数*)
-Sunday |> is_weeken_day |> print_bool |> print_newline
+Sunday |> is_weekend_day |> print_bool

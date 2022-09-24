@@ -1,5 +1,7 @@
 (* 来源: http://www.varesano.net/blog/fabio/simple%20math%20expression%20calculator%20ocaml 文章中有5种实现(已无法打开) *)
 
+(* 完整的 lexer - parser *)
+
 (*
 这是第一种char list实现
 解析函数每个都解处理 [1; 0;  ; +;  ; 2; *; 3] 这样的list, 不符合常规用法
@@ -8,12 +10,12 @@ F5 debug
 *)
 
 (* 表达式文法
-  expr = plus_expr | plus_expr + expr
-  plus_expr = mul_expr | mul_expr * plus_expr
-  mul_expr = number | ( expr )
+  expr      = plus_expr | plus_expr + expr
+  plus_expr = mul_expr  | mul_expr * plus_expr
+  mul_expr  = number    | ( expr )
 *)
 
-(* 字符串转char list: .[x]为下标访问*)
+(* 字符串转char list: .[x]为下标访问，这里是字符串反向迭代，列表前面append的递归 *)
 let explode s =
   let rec loop acc = function
     | 0 -> s.[0] :: acc
@@ -26,16 +28,18 @@ let rec implode = function
   | [] -> ""
   | x :: xs -> String.make 1 x ^ implode xs
 
+(* 数字判断 *)
 let is_digit x = x >= '0' && x <= '9'
+(* 字符转int并转为0-9的值 *)
 let int_of_digit x = int_of_char x - int_of_char '0'
 
 (* 自定义异常 *)
 exception SyntaxError of char list
 
-(* 基本元素 *)
+(* 基本元素数字: 数字合并 "21"->'2''1'-> 2*10+1 *)
 let number l =
   let rec loop acc = function
-    | x :: xs when is_digit x -> loop ((10 * acc) + int_of_digit x) xs
+    | x :: xs when is_digit x -> loop ( (10 * acc) + int_of_digit x) xs
     | l -> acc, l
   in
   loop 0 l

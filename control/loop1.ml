@@ -1,11 +1,15 @@
+(* for 循环 *)
 for i = 1 to 3 do
   print_endline (string_of_int i)
-done
-;;
-
+done;;
 print_endline "--------------";;
 
-(* let list1 = [1;2;3;4;5];; *)
-let iterFunc theList = 
-  Printf.printf "%d\n" theList in
-  List.iter iterFunc [1;2;3;4;5];;
+(* while 循环 *)
+(* 注意: ref型变量声明，取值与修改 *)
+let idx = ref 0;;
+while !idx < 3 do 
+  print_int !idx;
+  print_newline ();
+  incr idx
+done;;
+print_endline "--------------";;

@@ -44,35 +44,49 @@ exception SyntaxError of char list
 (* 基本元素数字: 数字合并 "21"->'2''1'-> 2*10+1 *)
 let number l =
   let rec loop acc = function
+    (* 模式: 剩余list以数字开头 *)
     | x :: xs when is_digit x -> loop ( (10 * acc) + int_of_digit x) xs
-    | l -> acc, l
+    (* 其它情况: 这里的l代表剩余list整体 *)
+    | l -> (acc, l)
   in
   loop 0 l
 
-(* factor: 数字与 括号 *)
+(* factor: 多位数字token 与 括号 *)
 let rec factor_parser l =
   match l with
+  (* 匹配基本数字token *)
   | x :: xs when is_digit x -> number l
+
+  (* 嵌套模式: 匹配括号和内嵌表达式 *)
   | '(' :: xs ->
     let x, l = expr_parser xs in (* 这里与 expr_parser 交互递归 *)
+    (* 嵌套表达式后面紧跟 ')'才合法 *)
     ( match l with
-    | ')' :: xs -> x, xs
-    | _ -> raise (SyntaxError l) )
+      | ')' :: xs -> x, xs
+      | _ -> raise (SyntaxError l) 
+    )
+  
+  (* 其它情况非法 *)
   | _ -> raise (SyntaxError l)
 
 (* term: 乘法级别处理 *)
 and term_parser l =
+  (* 先进行高一级优先级处理 *)
   let x, l = factor_parser l in
   match l with
+  (* 递归调用自身并求值 *)
   | '*' :: xs ->
     let y, l = term_parser xs in
     x * y, l
+
   | _ -> x, l
 
 (* expr: 加法级别处理 *)
 and expr_parser l =
+  (* 先进行高一级优先级处理 *)
   let x, l = term_parser l in
   match l with
+  (* 递归调用自身并求值 *)
   | '+' :: xs ->
     let y, l = expr_parser xs in
     x + y, l
@@ -82,8 +96,10 @@ let calc s =
   Printf.printf "%s = " s;
   try
     let l = str2list s in
+    (* x为归约求值结果, l为剩余列表 *)
     let x, l = expr_parser l in
     match l with
+    (* 剩余列表为空，代表正确处理完成 *)
     | [] -> Printf.printf "%d\n" x
     | _ -> raise (SyntaxError l)
   with SyntaxError l -> Printf.printf "Parse error at '%s'\n" (list2str l)
